@@ -1,9 +1,9 @@
 package main
 
 import (
-  "prixfixe"
+  "prixfixe/server"
 )
 
 func main() {
-  prixfixe.RunServer()
+  server.RunServer()
 }

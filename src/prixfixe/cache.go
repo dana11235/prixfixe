@@ -15,7 +15,7 @@ func NewCache() *Cache {
   return c
 }
 
-func (c Cache) Put(key string, tokens map[string]string) {
+func (c Cache) Put(key string, tokens map[string]string) *CacheItem {
   currItem := c.root
   for index := 0; index <= len(key); index++ {
     val, present := currItem.descendants[key[:index]]
@@ -27,6 +27,7 @@ func (c Cache) Put(key string, tokens map[string]string) {
     }
   }
   currItem.Tokens = tokens
+  return currItem
 }
 
 func (c Cache) Get(key string) *CacheItem {
