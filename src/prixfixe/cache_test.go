@@ -82,6 +82,16 @@ func TestPrefixSearch(t *testing.T) {
   }
 }
 
+func TestFullPrefixSearch(t *testing.T) {
+  c := NewCache()
+  insertSampleItems(c)
+  results := c.PrefixSearch("Alissa")
+  if len(results) != 1 {
+    t.Error("Wrong Number of Results")
+    t.Fail()
+  }
+}
+
 func TestEmptyPrefixSearch(t *testing.T) {
   c := NewCache()
   insertSampleItems(c)

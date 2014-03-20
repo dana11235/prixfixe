@@ -54,15 +54,13 @@ func (c Cache) Delete(key string) {
 
 func (ci CacheItem) retrieveDescendants() CacheItems {
   var matches []*CacheItem
+  if len(ci.Tokens) > 0 {
+    matches = append(matches, &ci)
+  }
   for k := range ci.descendants {
     currItem := ci.descendants[k]
-    if len(currItem.Tokens) > 0 {
-      matches = append(matches, currItem)
-    }
-    if len(currItem.descendants) > 0 {
-      newMatches := currItem.retrieveDescendants()
-      matches = append(matches, newMatches...)
-    }
+    newMatches := currItem.retrieveDescendants()
+    matches = append(matches, newMatches...)
   }
   return matches
 }
