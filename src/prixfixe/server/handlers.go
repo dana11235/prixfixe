@@ -8,6 +8,7 @@ import (
 
 func loadHandlers() {
     http.HandleFunc("/put", putHandler)
+    http.HandleFunc("/putall", putAllHandler)
     http.HandleFunc("/get", getHandler)
     http.HandleFunc("/search", searchHandler)
 }
@@ -29,6 +30,26 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
     } else {
       http.Error(w, "Invalid Input: Must Specify Key and Value", http.StatusServiceUnavailable)
     }
+}
+
+func putAllHandler(w http.ResponseWriter, r *http.Request) {
+    /*
+    values := r.FormValue("values")
+    if len(values) > 0 {
+      encodedValues := []byte(values)
+      var values map[string]string
+      err := json.Unmarshal(encodedValues, &values)
+      if err == nil {
+        insertedItem := staticCache.Put(key, values)
+        writeTransaction(insertedItem)
+        fmt.Fprintf(w, "OK")
+      } else {
+        http.Error(w, err.Error(), http.StatusServiceUnavailable)
+      }
+    } else {
+      http.Error(w, "Invalid Input: Must Specify Values", http.StatusServiceUnavailable)
+    }
+    */
 }
 
 func getHandler(w http.ResponseWriter, r *http.Request) {
