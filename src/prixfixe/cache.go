@@ -3,6 +3,7 @@ package prixfixe
 
 import (
 	"sort"
+  "strings"
 )
 
 type Cache struct {
@@ -15,7 +16,8 @@ func NewCache() *Cache {
 	return c
 }
 
-func (c Cache) Put(key string, tokens map[string]string) *CacheItem {
+func (c Cache) Put(iKey string, tokens map[string]string) *CacheItem {
+  key := strings.ToLower(iKey)
 	currItem := c.root
 	for index := 0; index <= len(key); index++ {
 		val, present := currItem.descendants[key[:index]]
@@ -30,7 +32,8 @@ func (c Cache) Put(key string, tokens map[string]string) *CacheItem {
 	return currItem
 }
 
-func (c Cache) Get(key string) *CacheItem {
+func (c Cache) Get(iKey string) *CacheItem {
+  key := strings.ToLower(iKey)
 	currItem := c.root
 	for index := 0; index <= len(key); index++ {
 		_, present := currItem.descendants[key[:index]]
@@ -66,7 +69,8 @@ func (ci CacheItem) retrieveDescendants() CacheItems {
 	return matches
 }
 
-func (c Cache) PrefixSearch(key string) []*CacheItem {
+func (c Cache) PrefixSearch(iKey string) []*CacheItem {
+  key := strings.ToLower(iKey)
 	if len(key) == 0 {
 		return nil
 	}

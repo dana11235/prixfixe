@@ -1,0 +1,73 @@
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Autocomplete Demo</title>
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	<style>
+	#query { width: 25em; }
+	</style>
+	<script>
+	$(function() {
+		function log( message ) {
+			$( "<div>" ).text( message ).prependTo( "#log" );
+			$( "#log" ).scrollTop( 0 );
+		}
+
+		$( "#query" ).autocomplete({
+			source: function( request, response ) {
+				$.ajax({
+					url: "http://localhost:8081/search",
+					dataType: "jsonp",
+					data: {
+						key: request.term,
+            max: 10
+					},
+					success: function( data ) {
+						response( $.map( data, function( item ) {
+							return {
+								label: item.Tokens.first_name + " " + item.Tokens.last_name +
+                  " (<b>" + item.Key.substr(0, request.term.length) + "</b>" +
+                  item.Key.substr(request.term.length) + ")",
+								value: item.Key
+							}
+						}));
+					}
+				});
+			},
+			minLength: 2,
+			select: function( event, ui ) {
+				log( ui.item ?
+					"Selected: " + ui.item.label :
+					"Nothing selected, input was " + this.value);
+			},
+			open: function() {
+				$( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+			},
+			close: function() {
+				$( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+			}
+		}).data("ui-autocomplete")._renderItem = function( ul, item ) {
+      return $("<li>")
+        .append( $("<a>").html( item.label ))
+        .appendTo( ul );
+    };
+	});
+	</script>
+</head>
+<body>
+
+<div class="ui-widget">
+	<label for="query">Your query: </label>
+	<input id="query">
+</div>
+
+<div class="ui-widget" style="margin-top:2em; font-family:Arial">
+	Result:
+	<div id="log" style="height: 200px; width: 300px; overflow: auto;" class="ui-widget-content"></div>
+</div>
+
+
+</body>
+</html>
