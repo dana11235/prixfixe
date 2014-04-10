@@ -26,6 +26,7 @@ func RunServer() {
 
 var fileName = flag.String("file", "", "CSV File to load data from")
 var port = flag.Int("port", 8080, "Port to bind the server to")
+var authKey = flag.String("auth_key", "", "Key to authenticate write requests")
 func parseFlags() {
   flag.Parse()
   if len(*fileName) > 0 {

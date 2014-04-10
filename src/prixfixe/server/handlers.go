@@ -17,22 +17,34 @@ func loadHandlers() {
     http.HandleFunc("/search", searchHandler)
 }
 
+func authenticated(w http.ResponseWriter, r *http.Request) bool {
+  if len(*authKey) > 0 {
+    if r.Header.Get("XPrixfixeAuth") != *authKey {
+      http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+      return false
+    }
+  }
+  return true
+}
+
 func putHandler(w http.ResponseWriter, r *http.Request) {
-    key := r.FormValue("key")
-    jsonValues := r.FormValue("value")
-    encodedValues := []byte(jsonValues)
-    if len(key) > 0 && len(jsonValues) > 0 {
-      var values map[string]string
-      err := json.Unmarshal(encodedValues, &values)
-      if err == nil {
-        insertedItem := staticCache.Put(key, values)
-        writeTransaction(insertedItem)
-        fmt.Fprintf(w, "OK")
+    if (authenticated(w, r)) {
+      key := r.FormValue("key")
+      jsonValues := r.FormValue("value")
+      encodedValues := []byte(jsonValues)
+      if len(key) > 0 && len(jsonValues) > 0 {
+        var values map[string]string
+        err := json.Unmarshal(encodedValues, &values)
+        if err == nil {
+          insertedItem := staticCache.Put(key, values)
+          writeTransaction(insertedItem)
+          fmt.Fprintf(w, "OK")
+        } else {
+          http.Error(w, err.Error(), http.StatusServiceUnavailable)
+        }
       } else {
-        http.Error(w, err.Error(), http.StatusServiceUnavailable)
+        http.Error(w, "Invalid Input: Must Specify Key and Value", http.StatusServiceUnavailable)
       }
-    } else {
-      http.Error(w, "Invalid Input: Must Specify Key and Value", http.StatusServiceUnavailable)
     }
 }
 
@@ -48,12 +60,14 @@ func getStringBody(r *http.Request) string {
 }
 
 func putAllHandler(w http.ResponseWriter, r *http.Request) {
-    data := r.FormValue("data")
-    err := processTransactions(strings.NewReader(data), true)
-    if err == nil {
-      fmt.Fprintf(w, "OK")
-    } else {
-      http.Error(w, err.Error(), http.StatusServiceUnavailable)
+    if (authenticated(w, r)) {
+      data := r.FormValue("data")
+      err := processTransactions(strings.NewReader(data), true)
+      if err == nil {
+        fmt.Fprintf(w, "OK")
+      } else {
+        http.Error(w, err.Error(), http.StatusServiceUnavailable)
+      }
     }
 }
 
